@@ -1,0 +1,15 @@
+{
+  "name": "qspider",
+  "version": "1.0.0",
+  "description": "Qemu command wrapper",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "installgen2",
+  "license": "AGPL-3.0",
+  "dependencies": {
+    "random-id": "0.0.2",
+    "random-port": "^0.1.0"
+  }
+}
