@@ -7,6 +7,8 @@ const JSONStream = require("json-stream")
 
 class QSpider extends EventEmitter {
 	constructor(qmpPort, options, proc) {
+		super()
+		
 		// save port and proc
 		this._qmpPort = qmpPort
 		this._proc = proc
@@ -24,7 +26,7 @@ class QSpider extends EventEmitter {
 
 	async _build() {
 		// Listen for stderr to debug
-		proc.stderr.on("data", (data) => {
+		this._proc.stderr.on("data", (data) => {
 			this.emit("error", data.toString())
 		})
 	}
