@@ -10,8 +10,29 @@ class QSpider {
 		this._qmpPort = qmpPort
 		this._proc = proc
 
+		// Qmp socket connection
+		this._qmp = null
+		this._qmpReader = null
+
 		// create cpu counter from original cpu options
 		this._cpus = options.cpus
+	}
+
+	async _connectQmp() {
+		return await new Promise((resolve, reject) => {
+			let qmp = net.connect({ port: this._qmpPort }, () => {
+				let jsonStream = JSONStream()
+
+				qmp.on("data", (data) => {
+					jsonStream.write(data.toString())
+				})
+
+				this._qmp = qmp
+				this._qmpReader = jsonStream
+
+				resolve()
+			})
+		})
 	}
 
 	// stop the vm
@@ -21,36 +42,40 @@ class QSpider {
 	}
 
 	async _qmpCommand(command) {
-		let commandId = getId(10)
+		// If QMP not connected, connect and run again afterwards
+		if (!this._qmpReader || !this._qmp) {
+			await this._connectQmp()
+			return await this._qmpCommand(command)
+		}
 
+		let commandId = getId(10)
 		command.id = commandId
 
-		return await new Promise((resolve, reject) => {
-			let qmp = net.connect({ port: this._qmpPort }, () => {
-				let sendObj = (obj) => {
-					qmp.write(JSON.stringify(obj) + "\n")
+		return await new Promise(async (resolve, reject) => {
+			// Macro for sending objects to QMP
+			let sendObj = (obj) => {
+				this._qmp.write(JSON.stringify(obj) + "\n")
+			}
+
+			// Send init and command
+			sendObj({ "execute": "qmp_capabilities" })
+			sendObj(command)
+
+			// Listener that handles responses
+			let listener = (data) => {
+				// Check if correct type
+				if (data.QMP != null) return
+				if (data.return == null) return
+
+				if (data.id == commandId) {
+					// Data is response, resolve promise and stop listening
+					this._qmpReader.removeListener("data", listener)
+					resolve(data.return)
 				}
+			}
 
-				sendObj({ "execute": "qmp_capabilities" })
-				sendObj(command)
-
-				let jsonStream = JSONStream()
-
-				qmp.on("data", (data) => {
-					jsonStream.write(data.toString())
-				})
-
-				// Todo, JSON streaming parser
-				jsonStream.on("data", (data) => {
-					if (data.QMP != null) return
-					if (data.return == null) return
-
-					if (data.id == commandId) {
-						qmp.end()
-						resolve(data.return)
-					}
-				})
-			})
+			// Listen for data
+			this._qmpReader.on("data", listener)
 		})
 	}
 
@@ -197,9 +222,8 @@ class QSpiderMaster {
 			"-cdrom", iso,
 			"-boot", "d",
 
-			// qmp service and monitor for debug
+			// qmp service
 			"-qmp", `tcp:127.0.0.1:${qmpPort},server,nowait`,
-			"-monitor", "tcp:127.0.0.1:4444,server,nowait",
 
 			// "-nographic",
 
