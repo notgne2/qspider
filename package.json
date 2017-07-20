@@ -9,6 +9,7 @@
   "author": "installgen2",
   "license": "AGPL-3.0",
   "dependencies": {
+    "json-stream": "^1.0.0",
     "random-id": "0.0.2",
     "random-port": "^0.1.0"
   }
