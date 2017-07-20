@@ -1,10 +1,11 @@
 const CP = require("child_process")
+const EventEmitter = require("events").EventEmitter
 const getId = require("random-id")
 const getPort = require("random-port")
 const net = require("net")
 const JSONStream = require("json-stream")
 
-class QSpider {
+class QSpider extends EventEmitter {
 	constructor(qmpPort, options, proc) {
 		// save port and proc
 		this._qmpPort = qmpPort
@@ -16,6 +17,16 @@ class QSpider {
 
 		// create cpu counter from original cpu options
 		this._cpus = options.cpus
+
+		// Build stuff
+		this._build()
+	}
+
+	async _build() {
+		// Listen for stderr to debug
+		proc.stderr.on("data", (data) => {
+			this.emit("error", data.toString())
+		})
 	}
 
 	async _connectQmp() {
@@ -237,17 +248,6 @@ class QSpiderMaster {
 
 		// spawn proccess
 		let proc = CP.spawn(command, args)
-
-		// Listen for stdout and stderr to debug
-		proc.stdout.on("data", (data) => {
-			console.log(data)
-			console.log(data.toString())
-		})
-
-		proc.stderr.on("data", (data) => {
-			console.error(data)
-			console.error(data.toString())
-		})
 
 		// return new instance of a specific qspider
 		return new QSpider(qmpPort, this._options, proc)
