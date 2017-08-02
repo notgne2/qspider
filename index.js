@@ -231,7 +231,7 @@ class QSpiderMaster {
 	async start(image, memory, cpus) {
 		if (memory == null) memory = this.options.memory
 		if (cpus == null) cpus = this.options.cpus
-			
+
 		// generate port for qmp service
 		let qmpPort = await new Promise((resolve, reject) => {
 			getPort({ from: 50000, range: 1000 }, (port) => {
@@ -268,8 +268,14 @@ class QSpiderMaster {
 		// spawn proccess
 		let proc = CP.spawn(command, args)
 
+		// Create new options object
+		let options = {
+			cpus: cpus,
+			memory: memory,
+		}
+
 		// return new instance of a specific qspider
-		return new QSpider(qmpPort, this.options, proc)
+		return new QSpider(qmpPort, options, proc)
 	}
 }
 
