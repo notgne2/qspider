@@ -255,7 +255,8 @@ class QSpiderMaster {
 			// qmp service
 			"-qmp", `tcp:127.0.0.1:${qmpPort},server,nowait`,
 
-			// "-nographic",
+			// Don't open a window for the VM
+			"-nographic",
 
 			// dunno what these do lol
 			"-enable-kvm",
