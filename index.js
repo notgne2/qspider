@@ -209,12 +209,29 @@ class QSpider extends EventEmitter {
 class QSpiderMaster {
 	constructor(options) {
 		// save options
-		this._options = options
+		this.options = options
 	}
 
+	static async convert(format, input, output) {
+		return await new Promise((resolve, reject) => {
+			CP.exec(`qemu-img convert -f ${format} -O qcow2 ${input} ${output}`, (err, stdout, stderr) => {
+				if (err) {
+					reject(err)
+					return
+				} else if (stderr) {
+					reject(stderr)
+				} else {
+					resolve()
+				}
+			})
+		})
+	}
 
 	// start a new vm from iso
-	async start(iso) {
+	async start(image, memory, cpus) {
+		if (memory == null) memory = this.options.memory
+		if (cpus == null) cpus = this.options.cpus
+			
 		// generate port for qmp service
 		let qmpPort = await new Promise((resolve, reject) => {
 			getPort({ from: 50000, range: 1000 }, (port) => {
@@ -227,13 +244,13 @@ class QSpiderMaster {
 
 		let args = [
 			// memory and cpu options
-			"-m", this._options.memory.toString(),
+			"-m", memory.toString(),
 			"-cpu", "host",
-			"-smp", `${this._options.cpus.toString()},maxcpus=8`,
+			"-smp", `${cpus.toString()},maxcpus=16`,
 
 			// boot options
-			"-cdrom", iso,
-			"-boot", "d",
+			"-hda", image,
+			"-boot", "c",
 
 			// qmp service
 			"-qmp", `tcp:127.0.0.1:${qmpPort},server,nowait`,
@@ -252,7 +269,7 @@ class QSpiderMaster {
 		let proc = CP.spawn(command, args)
 
 		// return new instance of a specific qspider
-		return new QSpider(qmpPort, this._options, proc)
+		return new QSpider(qmpPort, this.options, proc)
 	}
 }
 
