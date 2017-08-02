@@ -228,9 +228,11 @@ class QSpiderMaster {
 	}
 
 	// start a new vm from iso
-	async start(image, memory, cpus) {
+	async start(image, memory, cpus, bin) {
 		if (memory == null) memory = this.options.memory
 		if (cpus == null) cpus = this.options.cpus
+
+		if (bin == null) bin = "qemu-kvm"
 
 		// generate port for qmp service
 		let qmpPort = await new Promise((resolve, reject) => {
@@ -238,9 +240,6 @@ class QSpiderMaster {
 				resolve(port)
 			})
 		})
-
-		// binary to use
-		let command = "qemu-kvm"
 
 		let args = [
 			// memory and cpu options
