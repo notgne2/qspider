@@ -216,7 +216,7 @@ class QSpiderMaster {
 		this.options = options
 	}
 
-	static async convert(format, input, output, imageDir) {
+	async convert(format, input, output, imageDir) {
 		if (imageDir == null) imageDir = this.options.imageDir
 
 		return await new Promise((resolve, reject) => {
@@ -224,7 +224,7 @@ class QSpiderMaster {
 			let outputPath = path.join(imageDir, output)
 
 			let cmd = `qemu-img convert -f ${format} -O qcow2 ${inputPath} ${outputPath}`
-			
+
 			CP.exec(cmd, (err, stdout, stderr) => {
 				if (err) {
 					reject(err)
