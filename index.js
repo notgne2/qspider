@@ -216,12 +216,12 @@ class QSpiderMaster {
 		this.options = options
 	}
 
-	async convert(format, input, output, imageDir) {
-		if (imageDir == null) imageDir = this.options.imageDir
+	async convert(format, input, output, imagesDir) {
+		if (imagesDir == null) imagesDir = this.options.imagesDir
 
 		return await new Promise((resolve, reject) => {
-			let inputPath = path.join(imageDir, input)
-			let outputPath = path.join(imageDir, output)
+			let inputPath = path.join(imagesDir, input)
+			let outputPath = path.join(imagesDir, output)
 
 			let cmd = `qemu-img convert -f ${format} -O qcow2 ${inputPath} ${outputPath}`
 
@@ -239,11 +239,11 @@ class QSpiderMaster {
 	}
 
 	// start a new vm from iso
-	async start(image, memory, cpus, bin, imageDir) {
+	async start(image, memory, cpus, bin, imagesDir) {
 		if (memory == null) memory = this.options.memory
 		if (cpus == null) cpus = this.options.cpus
 
-		if (imageDir == null) imageDir = this.options.imageDir
+		if (imagesDir == null) imagesDir = this.options.imagesDir
 
 		if (bin == null) bin = "qemu-kvm"
 
@@ -261,7 +261,7 @@ class QSpiderMaster {
 			"-smp", `${cpus.toString()},maxcpus=16`,
 
 			// boot options
-			"-hda", path.join(imageDir, image),
+			"-hda", path.join(imagesDir, image),
 			"-boot", "c",
 
 			// qmp service
@@ -285,7 +285,7 @@ class QSpiderMaster {
 		let options = {
 			cpus: cpus,
 			memory: memory,
-			imageDir: imageDir,
+			imagesDir: imagesDir,
 		}
 
 		// return new instance of a specific qspider
