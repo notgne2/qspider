@@ -20,6 +20,9 @@ class QSpider extends EventEmitter {
 		// create cpu counter from original cpu options
 		this._cpus = options.cpus
 
+		// Images dir
+		this._imagesDir = options.imagesDir
+
 		// Build stuff
 		this._build()
 	}
@@ -160,9 +163,9 @@ class QSpider extends EventEmitter {
 		})
 	}
 
-	async _fileSize(path) {
+	async _fileSize(filePath) {
 		let res = await new Promise((resolve, reject) => {
-			CP.exec(`du -s ${path}`, { cwd: __dirname, }, (error, stdout, stderr) => {
+			CP.exec(`du -s ${filePath}`, { cwd: this._imagesDir, }, (error, stdout, stderr) => {
 				if (error != null) {
 					reject(error)
 					return
@@ -228,9 +231,11 @@ class QSpiderMaster {
 	}
 
 	// start a new vm from iso
-	async start(image, memory, cpus, bin) {
+	async start(image, memory, cpus, bin, imageDir) {
 		if (memory == null) memory = this.options.memory
 		if (cpus == null) cpus = this.options.cpus
+
+		if (imageDir == null) imageDir = this.options.imageDir
 
 		if (bin == null) bin = "qemu-kvm"
 
@@ -248,7 +253,7 @@ class QSpiderMaster {
 			"-smp", `${cpus.toString()},maxcpus=16`,
 
 			// boot options
-			"-hda", image,
+			"-hda", path.join(imageDir, image),
 			"-boot", "c",
 
 			// qmp service
@@ -272,6 +277,7 @@ class QSpiderMaster {
 		let options = {
 			cpus: cpus,
 			memory: memory,
+			imageDir: imageDir,
 		}
 
 		// return new instance of a specific qspider
