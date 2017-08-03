@@ -279,7 +279,7 @@ class QSpiderMaster {
 		]
 
 		// spawn proccess
-		let proc = CP.spawn(command, args)
+		let proc = CP.spawn(bin, args)
 
 		// Create new options object
 		let options = {
