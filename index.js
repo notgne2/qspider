@@ -4,6 +4,7 @@ const getId = require("random-id")
 const getPort = require("random-port")
 const net = require("net")
 const JSONStream = require("json-stream")
+const path = require("path")
 
 class QSpider extends EventEmitter {
 	constructor(qmpPort, options, proc) {
