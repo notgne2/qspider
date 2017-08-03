@@ -1,6 +1,6 @@
 {
   "name": "qspider",
-  "version": "1.2.2",
+  "version": "1.2.3",
   "description": "Qemu command wrapper",
   "main": "index.js",
   "scripts": {
