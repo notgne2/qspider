@@ -276,7 +276,7 @@ class QSpiderMaster {
 
 			// Set net stuff
 			"-device", `e1000,netdev=netthing0`,
-			"-netdev", `user,id=netthing0net=${ipRange},dhcpstart=${startIp}`,
+			"-netdev", `user,id=netthing0,net=${ipRange},dhcpstart=${startIp}`,
 
 			// enable ballooning
 			"-device", "virtio-balloon",
