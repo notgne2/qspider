@@ -5,6 +5,7 @@ const getPort = require("random-port")
 const net = require("net")
 const JSONStream = require("json-stream")
 const path = require("path")
+const randomMac = require("random-mac")
 
 class QSpider extends EventEmitter {
 	constructor(qmpPort, options, proc) {
@@ -239,7 +240,9 @@ class QSpiderMaster {
 	}
 
 	// start a new vm from iso
-	async start(image, memory, cpus, bin, imagesDir) {
+	async start(image, mac, memory, cpus, bin, imagesDir) {
+		if (mac == null) mac = randomMac()
+
 		if (memory == null) memory = this.options.memory
 		if (cpus == null) cpus = this.options.cpus
 
@@ -273,6 +276,10 @@ class QSpiderMaster {
 			// dunno what these do lol
 			"-enable-kvm",
 			"-realtime", "mlock=off",
+
+			// Set net mac address stuff
+			"-device", "e1000,netdev=netthing0",
+			"-netdev", "tap,id=netthing0,mac=${mac}",
 
 			// enable ballooning
 			"-device", "virtio-balloon",
