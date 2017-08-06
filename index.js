@@ -278,8 +278,8 @@ class QSpiderMaster {
 			"-realtime", "mlock=off",
 
 			// Set net mac address stuff
-			"-device", "e1000,netdev=netthing0",
-			"-netdev", "tap,id=netthing0,mac=${mac}",
+			"-device", "e1000,netdev=netthing0,mac=${mac}",
+			"-netdev", "tap,id=netthing0",
 
 			// enable ballooning
 			"-device", "virtio-balloon",
