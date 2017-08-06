@@ -11,6 +11,7 @@
   "dependencies": {
     "json-stream": "^1.0.0",
     "random-id": "0.0.2",
+    "random-mac": "0.0.4",
     "random-port": "^0.1.0"
   }
 }
