@@ -240,7 +240,7 @@ class QSpiderMaster {
 	}
 
 	// start a new vm from iso
-	async start(image, mac, memory, cpus, bin, imagesDir) {
+	async start(image, ipRange, startIp, memory, cpus, bin, imagesDir) {
 		if (mac == null) mac = randomMac()
 
 		if (memory == null) memory = this.options.memory
@@ -278,8 +278,8 @@ class QSpiderMaster {
 			"-realtime", "mlock=off",
 
 			// Set net mac address stuff
-			"-device", "e1000,netdev=netthing0,mac=${mac}",
-			"-netdev", "tap,id=netthing0",
+			"-device", `e1000,netdev=netthing0,mac=${mac}`,
+			"-netdev", `user,id=netthing0net=${ipRange},dhcpstart=${ipStart}`,
 
 			// enable ballooning
 			"-device", "virtio-balloon",
