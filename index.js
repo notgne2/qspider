@@ -279,7 +279,7 @@ class QSpiderMaster {
 
 			// Set net mac address stuff
 			"-device", `e1000,netdev=netthing0,mac=${mac}`,
-			"-netdev", `user,id=netthing0net=${ipRange},dhcpstart=${ipStart}`,
+			"-netdev", `user,id=netthing0net=${ipRange},dhcpstart=${startIp}`,
 
 			// enable ballooning
 			"-device", "virtio-balloon",
