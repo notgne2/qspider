@@ -240,7 +240,7 @@ class QSpiderMaster {
 	}
 
 	// start a new vm from iso
-	async start(image, ipRange, startIp, memory, cpus, bin, imagesDir) {
+	async start(imagesDir, image, ipRange, startIp, bin, memory, cpus) {
 		if (mac == null) mac = randomMac()
 
 		if (memory == null) memory = this.options.memory
